@@ -121,20 +121,14 @@
       <div class="bar"><div id="progress-bar"></div></div>
     </div>
     <div class="btns">
-      <button class="btn-secondary" title="Setup" onclick="doSetup()">&#9881;</button>
-      <button class="btn-play" onclick="doPlay()">PLAY</button>
+      <button class="btn-secondary" title="Setup" onclick="external.invoke('setup')">&#9881;</button>
+      <button class="btn-secondary" title="Register" onclick="window.open('https://github.com/efacanhaf/dimensionsro-patches', '_blank')" style="font-size:14px;">R</button>
+      <button class="btn-play" onclick="external.invoke('play')">PLAY</button>
     </div>
   </div>
 </div>
 <script>
-  function invoke(a) {
-    if (window.external && typeof window.external.invoke === 'function') {
-      try { window.external.invoke(a); } catch(e) {}
-    }
-  }
-  function doPlay() { invoke('play'); }
-  function doSetup() { invoke('setup'); }
-  setTimeout(function () { invoke('start_update'); }, 200);
+  setTimeout(function () { try { external.invoke('start_update'); } catch(e) {} }, 200);
   if (window.addEventListener) {
     window.addEventListener('message', function (e) {
       try {
