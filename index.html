@@ -121,20 +121,31 @@
       <div class="bar"><div id="progress-bar"></div></div>
     </div>
     <div class="btns">
-      <button class="btn-secondary" title="Setup" onclick="dbg('setup')">&#9881;</button>
-      <button class="btn-secondary" title="Register" onclick="dbg('register')" style="font-size:14px;">R</button>
-      <button class="btn-play" onclick="dbg('play')">PLAY</button>
+      <button class="btn-secondary" title="Setup" onclick="external.invoke('setup')">&#9881;</button>
+      <button class="btn-secondary" title="Register" onclick="window.open('https://github.com/efacanhaf/dimensionsro-patches','_blank')" style="font-size:14px;">R</button>
+      <button class="btn-play" onclick="external.invoke('play')">PLAY</button>
     </div>
   </div>
 </div>
 <script>
-  function dbg(action) {
-    var diag = 'click=' + action + ' | external=' + (typeof external) + ' | window.external=' + (typeof window.external);
-    try { diag += ' | invoke=' + (typeof external.invoke); } catch(e) { diag += ' | invoke-err=' + e; }
-    alert(diag);
-    if (action === 'register') { try { window.open('https://github.com/efacanhaf/dimensionsro-patches','_blank'); } catch(e){} return; }
-    try { external.invoke(action); } catch(e) { alert('invoke failed: ' + e); }
+  // rpatchur's UI controller calls these globals from Rust side
+  function setLabel(s) { var e = document.getElementById('progress-label'); if (e) e.innerHTML = s; }
+  function setPct(p) {
+    var b = document.getElementById('progress-bar'); if (b) b.style.width = p + '%';
+    var e = document.getElementById('progress-pct'); if (e) e.innerHTML = p + '%';
   }
+  function patchingStatusReady() { setLabel('READY'); setPct(100); }
+  function patchingStatusError(msg) { setLabel('ERROR: ' + msg); }
+  function patchingStatusDownloading(d, t, bps) {
+    var p = t > 0 ? Math.floor(d * 100 / t) : 0;
+    setLabel('DOWNLOADING ' + d + '/' + t); setPct(p);
+  }
+  function patchingStatusInstalling(d, t) {
+    var p = t > 0 ? Math.floor(d * 100 / t) : 0;
+    setLabel('INSTALLING ' + d + '/' + t); setPct(p);
+  }
+  function patchingStatusPatchApplied(name) { setLabel('APPLIED: ' + name); }
+
   setTimeout(function () { try { external.invoke('start_update'); } catch(e) {} }, 200);
   if (window.addEventListener) {
     window.addEventListener('message', function (e) {
