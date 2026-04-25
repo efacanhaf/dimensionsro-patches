@@ -9,263 +9,222 @@
   html, body {
     width: 780px; height: 580px; overflow: hidden;
     font-family: 'Segoe UI', 'Trebuchet MS', sans-serif;
-    color: #d8cce8;
-    background: #07070c;
+    color: #ece4f8;
+    background: #050308;
     user-select: none;
   }
-  body::before {
-    content: ''; position: fixed; inset: 0;
-    background:
-      radial-gradient(ellipse at 20% 30%, rgba(176,38,255,0.18), transparent 50%),
-      radial-gradient(ellipse at 80% 70%, rgba(45,212,191,0.10), transparent 55%),
-      radial-gradient(ellipse at 50% 100%, rgba(176,38,255,0.12), transparent 60%),
-      #07070c;
-    z-index: -2;
-  }
-  body::after {
-    content: ''; position: fixed; inset: 0; pointer-events: none;
-    background-image:
-      linear-gradient(115deg, transparent 49.7%, rgba(176,38,255,0.07) 49.8%, transparent 50%),
-      linear-gradient(73deg, transparent 49.6%, rgba(45,212,191,0.05) 49.8%, transparent 50%),
-      linear-gradient(28deg, transparent 49.5%, rgba(255,255,255,0.04) 49.7%, transparent 50%);
-    background-size: 220px 220px, 340px 340px, 180px 180px;
-    background-position: 0 0, 60px 30px, 30px 90px;
-    z-index: -1;
-    opacity: 0.6;
-  }
-  .scanlines {
-    position: fixed; inset: 0; pointer-events: none; z-index: 100;
-    background: repeating-linear-gradient(transparent 0, transparent 2px, rgba(0,0,0,0.10) 2px, rgba(0,0,0,0.10) 3px);
-    mix-blend-mode: multiply;
-  }
-  .frame {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    height: 100vh;
-    padding: 18px 22px;
-    gap: 14px;
-  }
-  header.top {
-    display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1px solid rgba(176,38,255,0.25);
-    padding-bottom: 12px;
-  }
-  .brand {
-    font-weight: 800; letter-spacing: 4px; text-transform: uppercase;
-    font-size: 24px;
-    background: linear-gradient(90deg, #ffffff 0%, #b026ff 50%, #2dd4bf 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 0 18px rgba(176,38,255,0.35);
-    position: relative;
-  }
-  .brand small { display: block; font-size: 9px; letter-spacing: 8px; color: #6a5a90; margin-top: 2px; -webkit-text-fill-color: #6a5a90; }
-  .status { display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #8a7ab0; }
-  .status .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #2dd4bf;
-    box-shadow: 0 0 12px #2dd4bf;
-    animation: pulse 1.6s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    50% { box-shadow: 0 0 22px #2dd4bf; transform: scale(1.15); }
-  }
-  main {
-    display: grid;
-    grid-template-columns: 1fr 230px;
-    gap: 14px;
+  /* HERO BACKGROUND ============================== */
+  .hero {
+    position: absolute; top: 0; left: 0; right: 0; height: 360px;
     overflow: hidden;
   }
-  .news {
-    background: rgba(15,12,28,0.6);
-    border: 1px solid rgba(176,38,255,0.18);
-    border-radius: 4px;
-    padding: 14px 16px 14px 18px;
-    overflow-y: auto;
-    backdrop-filter: blur(4px);
-    box-shadow: 0 0 30px rgba(176,38,255,0.05) inset;
+  .hero::before {
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse at 70% 50%, rgba(176,38,255,0.55) 0%, transparent 55%),
+      radial-gradient(ellipse at 25% 30%, rgba(45,212,191,0.30) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 90%, rgba(255,90,150,0.22) 0%, transparent 55%),
+      linear-gradient(180deg, #0a0612 0%, #1a0d2c 70%, #050308 100%);
   }
-  .news::-webkit-scrollbar { width: 6px; }
-  .news::-webkit-scrollbar-track { background: transparent; }
-  .news::-webkit-scrollbar-thumb { background: rgba(176,38,255,0.3); border-radius: 3px; }
-  .section-title {
-    font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
-    color: #b026ff;
-    border-left: 2px solid #b026ff;
-    padding-left: 8px;
-    margin-bottom: 14px;
+  /* "Floating shards" via CSS */
+  .shard { position:absolute; background:rgba(176,38,255,0.55); opacity:0.7; transform:rotate(20deg); box-shadow:0 0 30px rgba(176,38,255,0.6); }
+  .s1 { top:40px; left:60px; width:6px; height:80px; transform:rotate(-15deg); }
+  .s2 { top:120px; right:90px; width:4px; height:140px; background:rgba(45,212,191,0.6); box-shadow:0 0 24px rgba(45,212,191,0.6); transform:rotate(35deg); }
+  .s3 { top:220px; left:30%; width:3px; height:100px; transform:rotate(-50deg); }
+  .s4 { top:80px; right:40%; width:8px; height:60px; background:#fff; opacity:0.4; transform:rotate(70deg); }
+  .s5 { top:280px; right:20%; width:5px; height:90px; background:rgba(255,90,150,0.7); box-shadow:0 0 24px rgba(255,90,150,0.7); transform:rotate(-30deg); }
+  .hero::after {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(180deg, transparent 60%, #050308 100%);
   }
-  .news-item { margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px dashed rgba(176,38,255,0.12); }
-  .news-item:last-child { border-bottom: none; }
-  .news-meta { font-size: 10px; color: #6a5a90; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
-  .news-title { font-size: 14px; font-weight: 600; color: #e8def8; margin-bottom: 5px; }
-  .news-body { font-size: 12px; color: #a99cc4; line-height: 1.5; }
-  .news-body em { color: #2dd4bf; font-style: normal; }
-  .side {
-    display: flex; flex-direction: column; gap: 12px;
+
+  /* TITLE ON HERO =============================== */
+  .title-wrap {
+    position:absolute; top:60px; left:0; right:0; text-align:center;
+    z-index:5;
   }
-  .panel {
-    background: rgba(15,12,28,0.6);
-    border: 1px solid rgba(176,38,255,0.18);
-    border-radius: 4px;
-    padding: 12px 14px;
-    backdrop-filter: blur(4px);
+  .title {
+    font-family:'Impact','Trebuchet MS',sans-serif;
+    font-size:72px; letter-spacing:6px; line-height:0.9;
+    background: linear-gradient(180deg, #fff 0%, #c9a4ff 50%, #6a26b8 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text;
+    text-shadow:
+      0 0 30px rgba(176,38,255,0.8),
+      0 4px 20px rgba(0,0,0,0.8);
+    font-weight:900;
+    text-transform:uppercase;
   }
-  .stat-row { display: flex; justify-content: space-between; font-size: 11px; padding: 4px 0; }
-  .stat-row .label { color: #6a5a90; letter-spacing: 1.5px; text-transform: uppercase; }
-  .stat-row .value { color: #e8def8; font-weight: 600; }
-  footer.bottom {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 14px;
-    align-items: center;
+  .subtitle {
+    font-family:'Segoe UI',sans-serif; font-weight:400;
+    font-size:13px; letter-spacing:14px; color:#a99ad1;
+    margin-top:14px;
+    text-transform:uppercase;
+  }
+  .tagline {
+    font-style:italic; font-size:12px; color:#8a7ab0; margin-top:24px; letter-spacing:2px;
+    text-shadow:0 2px 8px rgba(0,0,0,0.8);
+  }
+
+  /* TOP RIGHT STATUS ============================ */
+  .top-bar {
+    position:absolute; top:14px; right:18px; z-index:10;
+    display:flex; align-items:center;
+    background:rgba(10,6,18,0.7);
+    border:1px solid rgba(176,38,255,0.4);
+    padding:6px 14px; border-radius:2px;
+  }
+  .dot { width:10px; height:10px; border-radius:50%; background:#2dd4bf; box-shadow:0 0 14px #2dd4bf; margin-right:10px; animation:pulse 1.6s infinite; }
+  @keyframes pulse { 50% { box-shadow:0 0 24px #2dd4bf; } }
+  .top-bar span { font-size:13px; letter-spacing:2px; text-transform:uppercase; color:#e8def8; font-weight:600; }
+
+  /* NEWS / FOOTER ZONE ========================== */
+  .panel-news {
+    position:absolute; left:18px; top:380px; right:18px; bottom:90px;
+    background:rgba(10,6,18,0.85);
+    border:2px solid rgba(176,38,255,0.5);
+    border-image: linear-gradient(135deg, rgba(176,38,255,0.6), rgba(45,212,191,0.4)) 1;
+    padding:12px 18px;
+    overflow:hidden;
+  }
+  .panel-news h2 {
+    font-size:12px; letter-spacing:3px; color:#c947ff; font-weight:700;
+    text-transform:uppercase; margin-bottom:8px;
+    border-bottom:1px solid rgba(176,38,255,0.3); padding-bottom:5px;
+  }
+  .news-row { display:flex; gap:14px; }
+  .news-card {
+    flex:1; padding:6px 8px;
+    border-left:3px solid #b026ff;
+    background:rgba(176,38,255,0.05);
+  }
+  .news-card .meta { font-size:10px; color:#7a6ba0; letter-spacing:1.5px; text-transform:uppercase; }
+  .news-card .h { font-size:14px; color:#fff; font-weight:700; margin:3px 0; }
+  .news-card .t { font-size:12px; color:#b8a9d0; line-height:1.35; }
+
+  /* BOTTOM ACTION BAR =========================== */
+  .actions {
+    position:absolute; bottom:0; left:0; right:0; height:80px;
+    background:linear-gradient(180deg, transparent 0%, rgba(176,38,255,0.08) 50%, rgba(10,6,18,1) 100%);
+    border-top:1px solid rgba(176,38,255,0.4);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 18px;
   }
   .progress {
-    background: rgba(15,12,28,0.7);
-    border: 1px solid rgba(176,38,255,0.25);
-    border-radius: 3px;
-    padding: 8px 12px;
-    overflow: hidden;
-    position: relative;
+    flex:1; max-width:340px; margin-right:18px;
+    color:#8a7ab0;
   }
-  .progress-info { display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #8a7ab0; margin-bottom: 6px; }
-  .bar { height: 4px; background: rgba(176,38,255,0.15); border-radius: 2px; overflow: hidden; }
-  .bar > div {
-    height: 100%; width: 0%;
-    background: linear-gradient(90deg, #b026ff, #2dd4bf);
-    box-shadow: 0 0 12px #b026ff;
-    transition: width 0.3s;
+  .progress .lbl { font-size:11px; letter-spacing:2px; text-transform:uppercase; margin-bottom:5px; display:flex; justify-content:space-between; }
+  .progress .lbl .pct { color:#2dd4bf; }
+  .bar { height:6px; background:rgba(176,38,255,0.2); border-radius:3px; overflow:hidden; box-shadow:0 0 10px rgba(176,38,255,0.3) inset; }
+  .bar > div { height:100%; width:0%; background:linear-gradient(90deg,#b026ff,#2dd4bf,#ff5a96); box-shadow:0 0 14px #b026ff; transition:width 0.4s; }
+
+  .btns { display:flex; align-items:center; gap:12px; }
+  button {
+    font-family:inherit; cursor:pointer;
+    background:rgba(176,38,255,0.10);
+    border:1px solid rgba(176,38,255,0.5);
+    color:#e8def8;
+    text-transform:uppercase; letter-spacing:2px; font-weight:700;
   }
-  .actions { display: flex; gap: 10px; }
-  button.btn {
-    background: rgba(176,38,255,0.08);
-    border: 1px solid rgba(176,38,255,0.4);
-    color: #d8cce8;
-    font-family: inherit;
-    font-weight: 700; font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
-    padding: 12px 22px;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
+  .btn-secondary {
+    width:48px; height:48px; font-size:20px; padding:0;
+    transition:all 0.2s;
   }
-  button.btn:hover { background: rgba(176,38,255,0.18); border-color: #b026ff; color: #fff; box-shadow: 0 0 18px rgba(176,38,255,0.5); }
-  button.btn.primary {
-    background: linear-gradient(135deg, #b026ff, #6a13a8);
-    border-color: #b026ff;
-    color: #fff;
-    padding: 14px 38px;
-    font-size: 14px;
-    box-shadow: 0 0 24px rgba(176,38,255,0.4);
+  .btn-secondary:hover { background:rgba(176,38,255,0.25); color:#fff; box-shadow:0 0 18px rgba(176,38,255,0.5); }
+  .btn-play {
+    height:54px; min-width:160px;
+    padding:0 36px;
+    font-size:18px; letter-spacing:8px; font-weight:900;
+    background:linear-gradient(135deg, #b026ff 0%, #6a13a8 100%);
+    border:1px solid #c947ff;
+    color:#fff;
+    box-shadow:0 0 28px rgba(176,38,255,0.55), 0 4px 14px rgba(0,0,0,0.6);
+    transition:all 0.2s;
   }
-  button.btn.primary:hover {
-    background: linear-gradient(135deg, #c947ff, #8b1edb);
-    box-shadow: 0 0 32px rgba(176,38,255,0.7);
-    transform: translateY(-1px);
+  .btn-play:hover {
+    background:linear-gradient(135deg,#d558ff 0%,#8b1edb 100%);
+    box-shadow:0 0 40px rgba(176,38,255,0.85), 0 6px 18px rgba(0,0,0,0.7);
   }
-  button.btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  button.icon-btn {
-    width: 32px; height: 32px; padding: 0; font-size: 16px; letter-spacing: 0;
-  }
+  .btn-play:active { transform:translateY(1px); }
 </style>
 </head>
 <body>
-<div class="scanlines"></div>
+<div class="hero">
+  <span class="shard s1"></span>
+  <span class="shard s2"></span>
+  <span class="shard s3"></span>
+  <span class="shard s4"></span>
+  <span class="shard s5"></span>
+</div>
 
-<div class="frame">
-  <header class="top">
-    <div class="brand">
-      DimensionsRO
-      <small>FRAGMENTED · WORLDS · ETERNAL</small>
+<div class="title-wrap">
+  <div class="title">DIMENSIONS</div>
+  <div class="subtitle">RAGNAROK ONLINE</div>
+  <div class="tagline">— a fragmented world calls —</div>
+</div>
+
+<div class="top-bar">
+  <div class="dot"></div>
+  <span id="server-status">ONLINE</span>
+</div>
+
+<div class="panel-news">
+  <h2>◆ Latest Transmissions</h2>
+  <div class="news-row">
+    <div class="news-card">
+      <div class="meta">2026.04.25 · OPEN</div>
+      <div class="h">Server is Live</div>
+      <div class="t">The rifts have opened. Renewal · 4th class · 2025-06-04 client. Welcome, traveler.</div>
     </div>
-    <div class="status"><span class="dot"></span><span id="server-status">CHECKING…</span></div>
-  </header>
-
-  <main>
-    <section class="news">
-      <div class="section-title">Transmissions</div>
-
-      <div class="news-item">
-        <div class="news-meta">2026.04.25 · System</div>
-        <div class="news-title">Servers Online</div>
-        <div class="news-body">The rifts have stabilized. Connection points are open. <em>Welcome, traveler.</em></div>
-      </div>
-
-      <div class="news-item">
-        <div class="news-meta">2026.04.25 · Patch 1.0</div>
-        <div class="news-title">Initial Release</div>
-        <div class="news-body">Renewal · 4th class · 2025-06-04 client. English translation layered. Please report any anomalies via the void.</div>
-      </div>
-    </section>
-
-    <aside class="side">
-      <div class="panel">
-        <div class="section-title">Realm Stats</div>
-        <div class="stat-row"><span class="label">Players</span><span class="value" id="stat-players">—</span></div>
-        <div class="stat-row"><span class="label">Uptime</span><span class="value" id="stat-uptime">—</span></div>
-        <div class="stat-row"><span class="label">Version</span><span class="value">v1.0</span></div>
-      </div>
-      <div class="panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-end;">
-        <div style="font-size:10px; letter-spacing:2px; color:#6a5a90; text-transform:uppercase; text-align:center; line-height:1.6;">
-          dimensionsro<br>.duckdns.org
-        </div>
-      </div>
-    </aside>
-  </main>
-
-  <footer class="bottom">
-    <div class="progress">
-      <div class="progress-info">
-        <span id="progress-label">IDLE</span>
-        <span id="progress-pct"></span>
-      </div>
-      <div class="bar"><div id="progress-bar"></div></div>
+    <div class="news-card">
+      <div class="meta">2026.04.25 · v1.0</div>
+      <div class="h">Translation Layer</div>
+      <div class="t">Items, skills, UI in English. Report anomalies via the void.</div>
     </div>
-    <div class="actions">
-      <button class="btn icon-btn" title="Setup" onclick="doSetup()">⚙</button>
-      <button class="btn primary" id="play-btn" onclick="doPlay()">Enter</button>
-    </div>
-  </footer>
+  </div>
+</div>
+
+<div class="actions">
+  <div class="progress">
+    <div class="lbl"><span id="progress-label">IDLE</span><span class="pct" id="progress-pct"></span></div>
+    <div class="bar"><div id="progress-bar"></div></div>
+  </div>
+  <div class="btns">
+    <button class="btn-secondary" title="Setup" onclick="doSetup()">⚙</button>
+    <button class="btn-play" onclick="doPlay()">PLAY</button>
+  </div>
 </div>
 
 <script>
-  function invoke(action) {
+  function invoke(a) {
     if (window.external && typeof window.external.invoke === 'function') {
-      try { window.external.invoke(action); } catch(e) {}
+      try { window.external.invoke(a); } catch(e) {}
     }
   }
   function doPlay() { invoke('play'); }
   function doSetup() { invoke('setup'); }
 
   setTimeout(function () { invoke('start_update'); }, 200);
-  setTimeout(function () {
-    var el = document.getElementById('server-status');
-    if (el) el.innerHTML = 'ONLINE';
-  }, 800);
 
   if (window.addEventListener) {
     window.addEventListener('message', function (e) {
       try {
         var d = (typeof e.data === 'string') ? JSON.parse(e.data) : e.data;
         if (!d) return;
-        if (d.type === 'patching_status') {
-          var lbl = document.getElementById('progress-label');
-          if (lbl) lbl.innerHTML = ((d.label || '') + '').toUpperCase() || 'PATCHING';
-        }
+        var lbl = document.getElementById('progress-label');
+        var bar = document.getElementById('progress-bar');
+        var pe = document.getElementById('progress-pct');
+        if (d.type === 'patching_status' && lbl) lbl.innerHTML = ((d.label || '') + '').toUpperCase() || 'PATCHING';
         if (d.type === 'patching_progress' && typeof d.value === 'number') {
           var pct = Math.round(d.value * 100);
-          var bar = document.getElementById('progress-bar');
           if (bar) bar.style.width = pct + '%';
-          var pe = document.getElementById('progress-pct');
           if (pe) pe.innerHTML = pct + '%';
         }
         if (d.type === 'patching_complete') {
-          var lbl2 = document.getElementById('progress-label');
-          if (lbl2) lbl2.innerHTML = 'READY';
-          var bar2 = document.getElementById('progress-bar');
-          if (bar2) bar2.style.width = '100%';
-          var pe2 = document.getElementById('progress-pct');
-          if (pe2) pe2.innerHTML = '';
+          if (lbl) lbl.innerHTML = 'READY';
+          if (bar) bar.style.width = '100%';
+          if (pe) pe.innerHTML = '';
         }
       } catch(_) {}
     });
