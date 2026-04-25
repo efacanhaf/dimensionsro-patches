@@ -231,33 +231,45 @@
 <script>
   function invoke(action) {
     if (window.external && typeof window.external.invoke === 'function') {
-      try { window.external.invoke(action); } catch(e) { console.warn(e); }
+      try { window.external.invoke(action); } catch(e) {}
     }
   }
   function doPlay() { invoke('play'); }
   function doSetup() { invoke('setup'); }
 
-  setTimeout(() => invoke('start_update'), 200);
-  setTimeout(() => { document.getElementById('server-status').textContent = 'ONLINE'; }, 800);
+  setTimeout(function () { invoke('start_update'); }, 200);
+  setTimeout(function () {
+    var el = document.getElementById('server-status');
+    if (el) el.innerHTML = 'ONLINE';
+  }, 800);
 
-  window.addEventListener('message', e => {
-    try {
-      const d = (typeof e.data === 'string') ? JSON.parse(e.data) : e.data;
-      if (d.type === 'patching_status') {
-        document.getElementById('progress-label').textContent = (d.label || '').toUpperCase() || 'PATCHING';
-      }
-      if (d.type === 'patching_progress' && typeof d.value === 'number') {
-        const pct = Math.round(d.value * 100);
-        document.getElementById('progress-bar').style.width = pct + '%';
-        document.getElementById('progress-pct').textContent = pct + '%';
-      }
-      if (d.type === 'patching_complete') {
-        document.getElementById('progress-label').textContent = 'READY';
-        document.getElementById('progress-bar').style.width = '100%';
-        document.getElementById('progress-pct').textContent = '';
-      }
-    } catch(_) {}
-  });
+  if (window.addEventListener) {
+    window.addEventListener('message', function (e) {
+      try {
+        var d = (typeof e.data === 'string') ? JSON.parse(e.data) : e.data;
+        if (!d) return;
+        if (d.type === 'patching_status') {
+          var lbl = document.getElementById('progress-label');
+          if (lbl) lbl.innerHTML = ((d.label || '') + '').toUpperCase() || 'PATCHING';
+        }
+        if (d.type === 'patching_progress' && typeof d.value === 'number') {
+          var pct = Math.round(d.value * 100);
+          var bar = document.getElementById('progress-bar');
+          if (bar) bar.style.width = pct + '%';
+          var pe = document.getElementById('progress-pct');
+          if (pe) pe.innerHTML = pct + '%';
+        }
+        if (d.type === 'patching_complete') {
+          var lbl2 = document.getElementById('progress-label');
+          if (lbl2) lbl2.innerHTML = 'READY';
+          var bar2 = document.getElementById('progress-bar');
+          if (bar2) bar2.style.width = '100%';
+          var pe2 = document.getElementById('progress-pct');
+          if (pe2) pe2.innerHTML = '';
+        }
+      } catch(_) {}
+    });
+  }
 </script>
 </body>
 </html>
