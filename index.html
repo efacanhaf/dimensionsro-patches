@@ -121,13 +121,20 @@
       <div class="bar"><div id="progress-bar"></div></div>
     </div>
     <div class="btns">
-      <button class="btn-secondary" title="Setup" onclick="external.invoke('setup')">&#9881;</button>
-      <button class="btn-secondary" title="Register" onclick="window.open('https://github.com/efacanhaf/dimensionsro-patches', '_blank')" style="font-size:14px;">R</button>
-      <button class="btn-play" onclick="external.invoke('play')">PLAY</button>
+      <button class="btn-secondary" title="Setup" onclick="dbg('setup')">&#9881;</button>
+      <button class="btn-secondary" title="Register" onclick="dbg('register')" style="font-size:14px;">R</button>
+      <button class="btn-play" onclick="dbg('play')">PLAY</button>
     </div>
   </div>
 </div>
 <script>
+  function dbg(action) {
+    var diag = 'click=' + action + ' | external=' + (typeof external) + ' | window.external=' + (typeof window.external);
+    try { diag += ' | invoke=' + (typeof external.invoke); } catch(e) { diag += ' | invoke-err=' + e; }
+    alert(diag);
+    if (action === 'register') { try { window.open('https://github.com/efacanhaf/dimensionsro-patches','_blank'); } catch(e){} return; }
+    try { external.invoke(action); } catch(e) { alert('invoke failed: ' + e); }
+  }
   setTimeout(function () { try { external.invoke('start_update'); } catch(e) {} }, 200);
   if (window.addEventListener) {
     window.addEventListener('message', function (e) {
