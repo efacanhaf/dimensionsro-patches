@@ -145,6 +145,7 @@
     setLabel('INSTALLING ' + d + '/' + t); setPct(p);
   }
   function patchingStatusPatchApplied(name) { setLabel('APPLIED: ' + name); }
+  function notificationInProgress() { /* no-op stub */ }
 
   setTimeout(function () { try { external.invoke('start_update'); } catch(e) {} }, 200);
   if (window.addEventListener) {
