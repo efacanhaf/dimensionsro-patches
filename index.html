@@ -123,7 +123,7 @@
     <div class="btns">
       <button class="btn-secondary" title="Setup" onclick="external.invoke('setup')">&#9881;</button>
       <button class="btn-secondary" title="Register" onclick="window.open('https://github.com/efacanhaf/dimensionsro-patches','_blank')" style="font-size:14px;">R</button>
-      <button class="btn-play" onclick="external.invoke('play')">PLAY</button>
+      <button class="btn-play" id="play-btn" onclick="external.invoke('play')" disabled style="opacity:0.5;">PLAY</button>
     </div>
   </div>
 </div>
@@ -134,7 +134,11 @@
     var b = document.getElementById('progress-bar'); if (b) b.style.width = p + '%';
     var e = document.getElementById('progress-pct'); if (e) e.innerHTML = p + '%';
   }
-  function patchingStatusReady() { setLabel('READY'); setPct(100); }
+  function patchingStatusReady() {
+    setLabel('READY'); setPct(100);
+    var p = document.getElementById('play-btn');
+    if (p) { p.disabled = false; p.style.opacity = '1'; }
+  }
   function patchingStatusError(msg) { setLabel('ERROR: ' + msg); }
   function patchingStatusDownloading(d, t, bps) {
     var p = t > 0 ? Math.floor(d * 100 / t) : 0;
@@ -145,7 +149,20 @@
     setLabel('INSTALLING ' + d + '/' + t); setPct(p);
   }
   function patchingStatusPatchApplied(name) { setLabel('APPLIED: ' + name); }
-  function notificationInProgress() { /* no-op stub */ }
+
+  // Toast for "in progress" notification
+  function notificationInProgress() {
+    var t = document.getElementById('toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'toast';
+      t.style.cssText = 'position:fixed;top:14px;left:50%;transform:translateX(-50%);background:rgba(20,15,11,0.95);border:1px solid rgba(216,160,80,0.7);color:#fef0c0;padding:10px 18px;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;box-shadow:0 4px 18px rgba(0,0,0,0.7);z-index:1000;';
+      document.body.appendChild(t);
+    }
+    t.innerHTML = '⏳ Patching in progress — please wait';
+    t.style.opacity = '1';
+    setTimeout(function () { t.style.opacity = '0'; t.style.transition = 'opacity 0.6s'; }, 2400);
+  }
 
   setTimeout(function () { try { external.invoke('start_update'); } catch(e) {} }, 200);
   if (window.addEventListener) {
