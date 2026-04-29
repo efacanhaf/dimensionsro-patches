@@ -120,16 +120,13 @@
       <div class="lbl"><span id="progress-label">IDLE</span><span class="pct" id="progress-pct"></span></div>
       <div class="bar"><div id="progress-bar"></div></div>
     </div>
+    <div id="mode-selector" style="display:flex; gap:0; margin-bottom:10px; border:1px solid #c87028; border-radius:4px; overflow:hidden; box-shadow:0 0 12px rgba(200,112,40,0.3);">
+      <button type="button" id="mode-vanilla-btn" onclick="selectMode('vanilla')" style="flex:1; padding:12px; font-size:13px; font-weight:700; letter-spacing:3px; cursor:pointer; border:0; background:rgba(216,160,80,0.5); color:#fef0c0; text-transform:uppercase;">Vanilla</button>
+      <div style="width:1px; background:#c87028;"></div>
+      <button type="button" id="mode-hd-btn" onclick="selectMode('hd')" style="flex:1; padding:12px; font-size:13px; font-weight:700; letter-spacing:3px; cursor:pointer; border:0; background:rgba(216,160,80,0.1); color:#a89070; text-transform:uppercase;">HD</button>
+    </div>
     <div class="btns">
       <button class="btn-secondary" title="Setup" onclick="external.invoke('setup')">&#9881;</button>
-      <div id="mode-selector" title="Modo grafico" style="display:inline-flex; border:1px solid #c87028; border-radius:3px; overflow:hidden; height:28px;">
-        <label style="display:flex; align-items:center; padding:0 10px; cursor:pointer; font-size:12px; font-weight:700; background:rgba(216,160,80,0.4); color:#fef0c0;" id="mode-vanilla-lbl">
-          <input type="radio" name="mode" value="vanilla" id="mode-vanilla" style="margin-right:5px;" checked>VAN
-        </label>
-        <label style="display:flex; align-items:center; padding:0 10px; cursor:pointer; font-size:12px; font-weight:700; background:rgba(216,160,80,0.1); color:#a89070;" id="mode-hd-lbl">
-          <input type="radio" name="mode" value="hd" id="mode-hd" style="margin-right:5px;">HD
-        </label>
-      </div>
       <button class="btn-secondary" title="Optional Content" onclick="togglePacksPanel()" style="font-size:14px;">+</button>
       <button class="btn-secondary" title="Register" onclick="window.open('https://github.com/efacanhaf/dimensionsro-patches','_blank')" style="font-size:14px;">R</button>
       <button class="btn-play" id="play-btn" onclick="onPlayClicked()" disabled style="opacity:0.5;">PLAY</button>
@@ -338,26 +335,26 @@
   var __targetMode = 'vanilla';
   var __pendingPlayMode = null;
 
-  function refreshModeUI() {
-    var v = document.getElementById('mode-vanilla');
-    var h = document.getElementById('mode-hd');
-    var vl = document.getElementById('mode-vanilla-lbl');
-    var hl = document.getElementById('mode-hd-lbl');
-    if (!v || !h) return;
-    var sel = v.checked ? 'vanilla' : 'hd';
-    if (vl) vl.style.background = sel === 'vanilla' ? 'rgba(216,160,80,0.4)' : 'rgba(216,160,80,0.1)';
-    if (vl) vl.style.color = sel === 'vanilla' ? '#fef0c0' : '#a89070';
-    if (hl) hl.style.background = sel === 'hd' ? 'rgba(216,160,80,0.4)' : 'rgba(216,160,80,0.1)';
-    if (hl) hl.style.color = sel === 'hd' ? '#fef0c0' : '#a89070';
+  function selectMode(m) {
+    __targetMode = m;
+    var vb = document.getElementById('mode-vanilla-btn');
+    var hb = document.getElementById('mode-hd-btn');
+    if (vb) {
+      vb.style.background = m === 'vanilla' ? 'rgba(216,160,80,0.5)' : 'rgba(216,160,80,0.1)';
+      vb.style.color = m === 'vanilla' ? '#fef0c0' : '#a89070';
+    }
+    if (hb) {
+      hb.style.background = m === 'hd' ? 'rgba(216,160,80,0.5)' : 'rgba(216,160,80,0.1)';
+      hb.style.color = m === 'hd' ? '#fef0c0' : '#a89070';
+    }
   }
-  document.addEventListener('change', function (e) {
-    if (e.target && e.target.name === 'mode') { __targetMode = e.target.value; refreshModeUI(); }
-  });
-  refreshModeUI();
+
+  // Called by Rust on get_active_mode response.
+  function activeModeResult(mode) {
+    if (mode === 'vanilla' || mode === 'hd') selectMode(mode);
+  }
 
   function onPlayClicked() {
-    var v = document.getElementById('mode-vanilla');
-    __targetMode = (v && v.checked) ? 'vanilla' : 'hd';
     setLabel('CHECKING ' + __targetMode.toUpperCase() + '...');
     if (__targetMode === 'hd') {
       // First make sure HD pack is downloaded + valid; rpatchur skips files
@@ -401,6 +398,7 @@
   // ============================================================================
 
   setTimeout(function () { try { external.invoke('start_update'); } catch(e) {} }, 200);
+  setTimeout(function () { try { external.invoke('get_active_mode'); } catch(e) {} }, 250);
   if (window.addEventListener) {
     window.addEventListener('message', function (e) {
       try {
