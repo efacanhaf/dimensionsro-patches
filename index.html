@@ -98,7 +98,11 @@
 </head>
 <body>
 <div class="hero"></div>
-<div class="top-bar"><div class="dot"></div><span id="server-status">ONLINE</span></div>
+<div class="top-bar">
+  <div class="dot" id="server-dot"></div><span id="server-status">CHECKING...</span>
+  <span id="server-players" style="margin-left:8px; font-size:11px; letter-spacing:1px; color:#a89070; display:none;"></span>
+  <span style="margin-left:14px; padding-left:14px; border-left:1px solid rgba(216,160,80,0.4); font-size:11px; letter-spacing:2px; cursor:pointer; color:#f0a040;" onclick="window.open('https://github.com/efacanhaf/dimensionsro-patches','_blank')" title="Criar conta no site">CRIAR CONTA</span>
+</div>
 <div class="lower">
   <div class="news-col">
     <h2>&#9670; Latest Transmissions</h2>
@@ -120,16 +124,10 @@
       <div class="lbl"><span id="progress-label">IDLE</span><span class="pct" id="progress-pct"></span></div>
       <div class="bar"><div id="progress-bar"></div></div>
     </div>
-    <div id="mode-selector" style="display:flex; gap:0; margin-bottom:10px; border:1px solid #c87028; border-radius:4px; overflow:hidden; box-shadow:0 0 12px rgba(200,112,40,0.3);">
-      <button type="button" id="mode-vanilla-btn" onclick="selectMode('vanilla')" style="flex:1; padding:12px; font-size:13px; font-weight:700; letter-spacing:3px; cursor:pointer; border:0; background:rgba(216,160,80,0.5); color:#fef0c0; text-transform:uppercase;">Vanilla</button>
-      <div style="width:1px; background:#c87028;"></div>
-      <button type="button" id="mode-hd-btn" onclick="selectMode('hd')" style="flex:1; padding:12px; font-size:13px; font-weight:700; letter-spacing:3px; cursor:pointer; border:0; background:rgba(216,160,80,0.1); color:#a89070; text-transform:uppercase;">HD</button>
-    </div>
     <div class="btns">
-      <button class="btn-secondary" title="Setup" onclick="external.invoke('setup')">&#9881;</button>
-      <button class="btn-secondary" title="Optional Content" onclick="togglePacksPanel()" style="font-size:14px;">+</button>
-      <button class="btn-secondary" title="Register" onclick="window.open('https://github.com/efacanhaf/dimensionsro-patches','_blank')" style="font-size:14px;">R</button>
-      <button class="btn-play" id="play-btn" onclick="onPlayClicked()" disabled style="opacity:0.5;">PLAY</button>
+      <button class="btn-secondary" title="Configurações de vídeo / áudio" onclick="external.invoke('setup')">&#9881;</button>
+      <button class="btn-secondary" title="Modo gráfico (Vanilla / HD)" onclick="togglePacksPanel()" style="font-size:11px; letter-spacing:1px;">HD</button>
+      <button class="btn-play" id="play-btn" onclick="external.invoke('play')" disabled style="opacity:0.5;">PLAY</button>
     </div>
   </div>
 </div>
@@ -138,13 +136,44 @@
     <h2 style="margin:0; color:#f0a040; font-size:14px; letter-spacing:4px; text-transform:uppercase;">Optional Content</h2>
     <button onclick="togglePacksPanel()" style="margin-left:auto; background:rgba(216,160,80,0.2); color:#fef0c0; border:1px solid #c87028; padding:6px 12px; cursor:pointer; font-weight:700;">CLOSE</button>
   </div>
-  <p style="color:#c8b890; font-size:12px; margin:0 0 14px;">Choose what to download. HD textures recommended for the best visuals (~14.8 GB).</p>
-  <div id="packs-container"></div>
-  <div style="display:flex; gap:10px; margin-top:14px;">
-    <button id="dl-btn" class="btn-play" onclick="downloadSelected()" style="flex:1; height:42px; font-weight:700;">Download Selected</button>
-    <button id="cancel-btn" onclick="cancelPackDownload()" style="background:#aa3030; color:#fff; border:1px solid #ff5050; padding:0 16px; font-weight:700;" disabled>Cancel</button>
+  <p style="color:#c8b890; font-size:12px; margin:0 0 18px;">Escolha o modo gráfico. Ao ativar HD pela primeira vez serão baixados ~17 GB de GRFs em alta resolução. O modo Vanilla usa apenas o conteúdo já instalado.</p>
+
+  <div style="border:1px solid rgba(216,160,80,0.4); border-radius:4px; padding:18px 20px; background:rgba(0,0,0,0.3);">
+    <div style="font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#a89070; margin-bottom:14px;">Modo gráfico atual: <span id="current-mode-label" style="color:#f0a040; font-weight:700;">—</span></div>
+
+    <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;">
+      <label style="display:flex; align-items:center; cursor:pointer; font-size:14px; font-weight:700; padding:12px 16px; border:1px solid rgba(216,160,80,0.3); border-radius:4px;">
+        <input type="radio" name="mode" value="vanilla" id="mode-vanilla" style="width:18px; height:18px; margin:0 18px 0 0; flex-shrink:0;" checked>
+        <span>Vanilla</span>
+        <span style="margin-left:auto; font-size:11px; color:#a89070; font-weight:400;">conteúdo padrão</span>
+      </label>
+      <label style="display:flex; align-items:center; cursor:pointer; font-size:14px; font-weight:700; padding:12px 16px; border:1px solid rgba(216,160,80,0.3); border-radius:4px;">
+        <input type="radio" name="mode" value="hd" id="mode-hd" style="width:18px; height:18px; margin:0 18px 0 0; flex-shrink:0;">
+        <span>HD</span>
+        <span style="margin-left:auto; font-size:11px; color:#a89070; font-weight:400;">~17 GB no primeiro uso</span>
+      </label>
+    </div>
+
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+      <button id="apply-mode-btn" class="btn-play" onclick="applySelectedMode()" style="height:42px; padding:0 28px; font-weight:700; letter-spacing:3px;">APLICAR</button>
+      <button id="cancel-mode-btn" onclick="cancelPackDownload()" style="background:#aa3030; color:#fff; border:1px solid #ff5050; padding:0 14px; height:42px; font-weight:700; display:none;">CANCEL</button>
+      <button id="cleanup-hd-btn" onclick="cleanupHd()" style="margin-left:auto; background:rgba(170,48,48,0.2); color:#f0a040; border:1px solid rgba(216,160,80,0.4); padding:0 14px; height:42px; font-weight:700; font-size:11px; letter-spacing:2px; cursor:pointer;" title="Apaga GRFs HD do disco e volta para Vanilla">LIMPAR HD ↓</button>
+    </div>
+
+    <div id="mode-progress" style="display:none; margin-top:14px;">
+      <div style="font-size:11px; color:#c8b890; margin-bottom:6px;" id="mode-progress-label">aguardando…</div>
+      <div style="height:6px; background:rgba(216,160,80,0.15); border-radius:3px; overflow:hidden;">
+        <div id="mode-progress-bar" style="height:100%; width:0%; background:linear-gradient(90deg,#c87028,#f0a040,#94d4a8); transition:width .3s;"></div>
+      </div>
+    </div>
+
+    <div id="mode-toast" style="margin-top:14px; font-size:11px; color:#a89070;"></div>
   </div>
-  <div id="pack-toast" style="margin-top:10px; padding:8px 12px; background:rgba(0,0,0,0.5); font-size:11px; color:#a89070;">waiting for packs...</div>
+
+  <div id="packs-container" style="display:none;"></div>
+  <button id="dl-btn" style="display:none;"></button>
+  <button id="cancel-btn" style="display:none;"></button>
+  <div id="pack-toast" style="display:none;"></div>
 </div>
 <style>
   .pack { border:1px solid rgba(216,160,80,0.3); padding:10px 14px; margin-bottom:8px; border-radius:4px; background:rgba(0,0,0,0.3); }
@@ -331,74 +360,206 @@
     setTimeout(function () { t.style.opacity = '0'; t.style.transition = 'opacity 0.6s'; }, 2400);
   }
 
-  // === Mode selector (Vanilla / HD) ============================================
-  var __targetMode = 'vanilla';
-  var __pendingPlayMode = null;
+  // === Mode selector (lives inside HD/Optional Content overlay) ================
+  var __activeMode = 'unknown';      // current state on disk (from Rust)
+  var __pendingApplyMode = null;     // mode the user just clicked APPLY for
 
-  function selectMode(m) {
-    __targetMode = m;
-    var vb = document.getElementById('mode-vanilla-btn');
-    var hb = document.getElementById('mode-hd-btn');
-    if (vb) {
-      vb.style.background = m === 'vanilla' ? 'rgba(216,160,80,0.5)' : 'rgba(216,160,80,0.1)';
-      vb.style.color = m === 'vanilla' ? '#fef0c0' : '#a89070';
-    }
-    if (hb) {
-      hb.style.background = m === 'hd' ? 'rgba(216,160,80,0.5)' : 'rgba(216,160,80,0.1)';
-      hb.style.color = m === 'hd' ? '#fef0c0' : '#a89070';
-    }
+  function setCurrentModeLabel(m) {
+    var el = document.getElementById('current-mode-label');
+    if (el) el.textContent = (m === 'hd' ? 'HD' : (m === 'vanilla' ? 'Vanilla' : '—'));
   }
 
   // Called by Rust on get_active_mode response.
   function activeModeResult(mode) {
-    if (mode === 'vanilla' || mode === 'hd') selectMode(mode);
+    __activeMode = mode;
+    setCurrentModeLabel(mode);
+    var v = document.getElementById('mode-vanilla');
+    var h = document.getElementById('mode-hd');
+    if (mode === 'hd' && h) h.checked = true;
+    else if (mode === 'vanilla' && v) v.checked = true;
   }
 
-  function onPlayClicked() {
-    setLabel('CHECKING ' + __targetMode.toUpperCase() + '...');
-    if (__targetMode === 'hd') {
-      // First make sure HD pack is downloaded + valid; rpatchur skips files
-      // already matching sha256. After download_pack completes, applyMode runs.
-      __pendingPlayMode = 'hd';
-      try { external.invoke('list_optional_packs'); } catch (e) {}
-      // download_pack flow uses queue; we trigger HD pack id directly.
-      __activePackId = 'hd';
-      __queued = [];
-      setLabel('VERIFYING HD CONTENT...');
+  function setModeToast(msg) {
+    var t = document.getElementById('mode-toast'); if (t) t.textContent = msg || '';
+  }
+  function setModeProgress(visible, label, pct) {
+    var p = document.getElementById('mode-progress');
+    var l = document.getElementById('mode-progress-label');
+    var b = document.getElementById('mode-progress-bar');
+    if (p) p.style.display = visible ? 'block' : 'none';
+    if (l && label) l.textContent = label;
+    if (b && typeof pct === 'number') b.style.width = pct + '%';
+  }
+  function setModeBusy(busy) {
+    var apply = document.getElementById('apply-mode-btn');
+    var cancel = document.getElementById('cancel-mode-btn');
+    if (apply) { apply.disabled = busy; apply.style.opacity = busy ? '0.5' : '1'; }
+    if (cancel) cancel.style.display = busy ? 'inline-block' : 'none';
+    var radios = document.querySelectorAll('input[name="mode"]');
+    for (var i = 0; i < radios.length; i++) radios[i].disabled = busy;
+  }
+
+  function applySelectedMode() {
+    var v = document.getElementById('mode-vanilla');
+    var target = (v && v.checked) ? 'vanilla' : 'hd';
+    if (target === __activeMode) {
+      setModeToast('Já está no modo ' + target + '.');
+      return;
+    }
+    setModeBusy(true);
+    if (target === 'hd') {
+      __pendingApplyMode = 'hd';
+      __activePackId = 'hd'; __queued = [];
+      setModeProgress(true, 'verificando GRFs HD...', 0);
+      setModeToast('Arquivos já presentes serão pulados (verificação por sha256).');
       external.invoke(JSON.stringify({ function: 'download_pack', parameters: { id: 'hd' } }));
     } else {
-      __pendingPlayMode = 'vanilla';
+      __pendingApplyMode = 'vanilla';
+      setModeProgress(false, '', 0);
+      setModeToast('Trocando para Vanilla...');
       external.invoke(JSON.stringify({ function: 'apply_mode', parameters: { mode: 'vanilla' } }));
     }
   }
 
-  // Override packDownloadComplete to chain into apply_mode + play.
-  var __orig_packDownloadComplete = packDownloadComplete;
+  // Override pack callbacks to drive the mode UI (instead of the deprecated pack list).
+  packDownloadProgress = function (id, fileIndex, fileCount, downloaded, total, bps) {
+    if (__pendingApplyMode !== 'hd') return;
+    var pct = total > 0 ? Math.floor(downloaded * 100 / total) : 0;
+    setModeProgress(true,
+      'arquivo ' + (fileIndex + 1) + '/' + fileCount + ' — ' +
+      fmtBytes(downloaded) + '/' + fmtBytes(total) + ' @ ' + fmtBytes(bps) + '/s',
+      pct);
+  };
+  packDownloadVerifying = function (id, fileName) {
+    if (__pendingApplyMode !== 'hd') return;
+    setModeProgress(true, 'verificando ' + fileName + '...', 100);
+  };
   packDownloadComplete = function (id) {
-    __orig_packDownloadComplete(id);
-    if (__pendingPlayMode === 'hd' && id === 'hd') {
-      setLabel('SWITCHING TO HD...');
+    if (__pendingApplyMode === 'hd' && id === 'hd') {
+      setModeProgress(true, 'GRFs OK, aplicando modo HD...', 100);
       external.invoke(JSON.stringify({ function: 'apply_mode', parameters: { mode: 'hd' } }));
     }
   };
+  packDownloadCancelled = function (id) {
+    setModeProgress(false, '', 0);
+    __pendingApplyMode = null; __queued = []; __activePackId = null;
+    // Force radio + active mode back to Vanilla, since HD may be incomplete.
+    var v = document.getElementById('mode-vanilla');
+    if (v) v.checked = true;
+    if (__activeMode === 'hd') {
+      // Currently HD on disk → swap to vanilla.
+      setModeToast('Cancelado. Voltando para Vanilla...');
+      __pendingApplyMode = 'vanilla';
+      external.invoke(JSON.stringify({ function: 'apply_mode', parameters: { mode: 'vanilla' } }));
+    } else {
+      // Already vanilla on disk; just clear UI state.
+      setModeBusy(false);
+      setModeToast('Cancelado. Modo Vanilla mantido. GRFs HD válidas foram preservadas.');
+    }
+  };
+  packDownloadFailed = function (id, error) {
+    setModeProgress(false, '', 0);
+    setModeToast('Erro no download: ' + error);
+    setModeBusy(false);
+    __pendingApplyMode = null; __queued = []; __activePackId = null;
+  };
 
-  // Called by Rust after apply_mode finishes.
   function applyModeResult(mode, ok, err) {
+    setModeBusy(false);
     if (!ok) {
-      setLabel('ERROR: ' + (err || 'apply_mode failed'));
-      __pendingPlayMode = null;
+      setModeToast('Erro: ' + (err || 'apply_mode falhou'));
+      setModeProgress(false, '', 0);
+      __pendingApplyMode = null;
       return;
     }
-    setLabel('READY');
-    if (__pendingPlayMode) {
-      __pendingPlayMode = null;
-      external.invoke('play');
-    }
+    __activeMode = mode;
+    __pendingApplyMode = null;
+    setCurrentModeLabel(mode);
+    setModeProgress(false, '', 0);
+    setModeToast('Modo ' + (mode === 'hd' ? 'HD' : 'Vanilla') + ' ativado. Feche este painel e clique PLAY.');
   }
+
+  // Called by Rust if the pre-flight integrity check inside handle_play fails.
+  function playPreflightFailed(msg) {
+    setLabel('ERROR');
+    var ov = document.getElementById('packs-overlay');
+    if (ov) ov.style.display = 'block';
+    setModeToast('Falha na verificação: ' + (msg || 'arquivos corrompidos. Reinstale o cliente.'));
+  }
+
+  // === Cleanup HD ============================================================
+  function cleanupHd() {
+    var sure = confirm('Isso vai APAGAR ~17 GB de GRFs HD do disco e voltar para Vanilla. Para usar HD novamente sera preciso baixar tudo. Continuar?');
+    if (!sure) return;
+    var btn = document.getElementById('cleanup-hd-btn');
+    if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+    setModeToast('Apagando GRFs HD...');
+    setModeBusy(true);
+    external.invoke('cleanup_hd');
+  }
+
+  function cleanupHdResult(ok, freedBytes, msg) {
+    var btn = document.getElementById('cleanup-hd-btn');
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+    setModeBusy(false);
+    if (!ok) {
+      setModeToast('Erro ao limpar: ' + (msg || 'falha'));
+      return;
+    }
+    // After cleanup we are guaranteed in vanilla; refresh radio + label.
+    __activeMode = 'vanilla';
+    setCurrentModeLabel('vanilla');
+    var v = document.getElementById('mode-vanilla');
+    if (v) v.checked = true;
+    setModeToast('Liberados ' + fmtBytes(freedBytes) + '. Modo Vanilla ativo.');
+  }
+  // ============================================================================
+  // ============================================================================
   // ============================================================================
 
   setTimeout(function () { try { external.invoke('start_update'); } catch(e) {} }, 200);
   setTimeout(function () { try { external.invoke('get_active_mode'); } catch(e) {} }, 250);
+
+  // === Live server status ====================================================
+  var STATUS_URL = 'http://163.176.144.14:8888/status';
+  function setServerStatus(online, players) {
+    var s = document.getElementById('server-status');
+    var d = document.getElementById('server-dot');
+    var p = document.getElementById('server-players');
+    if (s) s.textContent = online ? 'ONLINE' : 'OFFLINE';
+    if (s) s.style.color = online ? '#fff0c8' : '#ff8888';
+    if (d) d.style.background = online ? '#94d4a8' : '#aa3030';
+    if (p) {
+      if (online && typeof players === 'number') {
+        p.textContent = players + ' player' + (players === 1 ? '' : 's');
+        p.style.display = 'inline';
+      } else {
+        p.style.display = 'none';
+      }
+    }
+  }
+  function pollServerStatus() {
+    var x;
+    try { x = new XMLHttpRequest(); } catch(e) { return; }
+    x.open('GET', STATUS_URL, true);
+    x.timeout = 5000;
+    x.onload = function () {
+      if (x.status >= 200 && x.status < 300) {
+        try {
+          var d = JSON.parse(x.responseText);
+          setServerStatus(!!d.online, d.players);
+        } catch(e) { setServerStatus(false); }
+      } else {
+        setServerStatus(false);
+      }
+    };
+    x.onerror = function () { setServerStatus(false); };
+    x.ontimeout = function () { setServerStatus(false); };
+    try { x.send(); } catch(e) { setServerStatus(false); }
+  }
+  pollServerStatus();
+  setInterval(pollServerStatus, 30000);
+  // ============================================================================
   if (window.addEventListener) {
     window.addEventListener('message', function (e) {
       try {
