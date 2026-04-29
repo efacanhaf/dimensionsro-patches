@@ -1,7 +1,0 @@
-1 0001.thor
-2 0002.thor
-3 0003.thor
-4 0004.thor
-5 0005.thor
-6 0006.thor
-7 0007.thor
