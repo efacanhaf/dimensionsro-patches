@@ -335,6 +335,26 @@
     var p = document.getElementById('play-btn');
     if (p) { p.disabled = false; p.style.opacity = '1'; }
   }
+  // Called when DimensionsRO.yml itself was just patched. The launcher's
+  // in-memory hashes are stale, so we relaunch automatically after a short
+  // countdown.
+  function patchingStatusReadyAfterUpdate() {
+    setPct(100);
+    var p = document.getElementById('play-btn');
+    if (p) { p.disabled = true; p.style.opacity = '0.5'; }
+    var n = 3;
+    setLabel('LAUNCHER ATUALIZADO — REINICIANDO EM ' + n + 's');
+    var iv = setInterval(function () {
+      n -= 1;
+      if (n > 0) {
+        setLabel('LAUNCHER ATUALIZADO — REINICIANDO EM ' + n + 's');
+      } else {
+        clearInterval(iv);
+        setLabel('REINICIANDO...');
+        try { external.invoke('relaunch'); } catch (e) {}
+      }
+    }, 1000);
+  }
   function patchingStatusError(msg) { setLabel('ERROR: ' + msg); }
   function patchingStatusDownloading(d, t, bps) {
     var p = t > 0 ? Math.floor(d * 100 / t) : 0;
