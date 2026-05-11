@@ -41,25 +41,9 @@
     border-top:1px solid rgba(216,160,80,0.55);
     display:flex;
   }
-  .news-col {
-    flex:1; padding:14px 20px;
-    border-right:1px solid rgba(216,160,80,0.18);
-    overflow:hidden;
-  }
-  .news-col h2 {
-    font-size:11px; letter-spacing:4px; color:#f0a040; font-weight:800;
-    text-transform:uppercase; margin-bottom:8px;
-  }
-  .news-row { display:flex; gap:12px; }
-  .news-card {
-    flex:1; padding:4px 8px; border-left:3px solid #c87028;
-  }
-  .news-card .meta { font-size:10px; color:#a89070; letter-spacing:1.5px; text-transform:uppercase; }
-  .news-card .h { font-size:13px; color:#fef0c0; font-weight:700; margin:2px 0; }
-  .news-card .t { font-size:11px; color:#c8b890; line-height:1.3; }
   .action-col {
-    width:240px;
-    padding:14px 18px;
+    flex:1;
+    padding:14px 24px;
     display:flex; flex-direction:column; justify-content:space-between;
     background:linear-gradient(180deg, rgba(216,160,80,0.10) 0%, rgba(20,15,11,0) 100%);
   }
@@ -80,53 +64,38 @@
   .btn-secondary:hover { background:rgba(216,160,80,0.25); color:#fff; box-shadow:0 0 14px rgba(216,160,80,0.5); }
   .dro-login-pane {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 10px 14px;
-    background: rgba(20, 14, 8, 0.6);
-    border: 1px solid rgba(216, 160, 80, 0.3);
-    border-radius: 4px;
-    margin: 8px 0;
-    max-width: 320px;
-  }
-  .dro-login-row {
-    display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 8px;
-    font-size: 12px;
-    color: #fef0c0;
+    flex-wrap: wrap;
   }
-  .dro-login-row label {
-    min-width: 64px;
-    letter-spacing: 1px;
-  }
-  .dro-login-row input[type="text"],
-  .dro-login-row input[type="password"] {
-    flex: 1;
+  .dro-login-pane input[type="text"],
+  .dro-login-pane input[type="password"] {
     background: rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(216, 160, 80, 0.4);
     color: #fef0c0;
     padding: 6px 8px;
     font-family: inherit;
-    font-size: 13px;
-  }
-  .dro-login-row input:focus {
+    font-size: 12px;
     outline: none;
-    border-color: #f0a040;
+    width: 150px;
   }
+  .dro-login-pane input:focus { border-color: #f0a040; }
   .dro-login-remember {
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 1px;
     color: #d8a050;
-  }
-  .dro-login-remember input[type="checkbox"] {
-    margin-right: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    user-select: none;
   }
   .dro-login-error {
     color: #ff6464;
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 1px;
-    padding: 4px 8px;
+    width: 100%;
   }
   .btn-play {
     flex:1; height:50px;
@@ -154,44 +123,22 @@
   <span style="margin-left:14px; padding-left:14px; border-left:1px solid rgba(216,160,80,0.4); font-size:11px; letter-spacing:2px; cursor:pointer; color:#f0a040;" onclick="window.open('https://github.com/efacanhaf/dimensionsro-patches','_blank')" title="Criar conta no site">CRIAR CONTA</span>
 </div>
 <div class="lower">
-  <div class="news-col">
-    <h2>&#9670; Latest Transmissions</h2>
-    <div class="news-row">
-      <div class="news-card">
-        <div class="meta">2026.04.25 &middot; OPEN</div>
-        <div class="h">Server is Live</div>
-        <div class="t">The rifts have opened. Renewal &middot; 4th class.</div>
-      </div>
-      <div class="news-card">
-        <div class="meta">2026.04.25 &middot; v1.0</div>
-        <div class="h">Translation Layer</div>
-        <div class="t">Items, skills, UI in English.</div>
-      </div>
-    </div>
-  </div>
   <div class="action-col">
     <div class="progress">
       <div class="lbl"><span id="progress-label">IDLE</span><span class="pct" id="progress-pct"></span></div>
       <div class="bar"><div id="progress-bar"></div></div>
     </div>
+    <div class="dro-login-pane" id="dro-login-pane">
+      <input type="text" id="dro-login-user" placeholder="Usuário" autocomplete="off" spellcheck="false" maxlength="23">
+      <input type="password" id="dro-login-pass" placeholder="Senha" autocomplete="off" maxlength="23">
+      <label class="dro-login-remember">
+        <input type="checkbox" id="dro-login-remember"> Lembrar de mim
+      </label>
+      <div class="dro-login-error" id="dro-login-error" hidden></div>
+    </div>
     <div class="btns">
       <button class="btn-secondary" title="Configurações de vídeo / áudio" onclick="external.invoke('setup')">&#9881;</button>
       <button class="btn-secondary" title="Modo gráfico (Vanilla / HD)" onclick="togglePacksPanel()" style="font-size:11px; letter-spacing:1px;">HD</button>
-      <div class="dro-login-pane" id="dro-login-pane">
-        <div class="dro-login-row">
-          <label for="dro-login-user">Usuário</label>
-          <input type="text" id="dro-login-user" autocomplete="off" spellcheck="false" maxlength="23">
-        </div>
-        <div class="dro-login-row">
-          <label for="dro-login-pass">Senha</label>
-          <input type="password" id="dro-login-pass" autocomplete="off" maxlength="23">
-        </div>
-        <div class="dro-login-row dro-login-remember">
-          <input type="checkbox" id="dro-login-remember">
-          <label for="dro-login-remember">Lembrar de mim</label>
-        </div>
-        <div class="dro-login-error" id="dro-login-error" hidden></div>
-      </div>
       <button class="btn-play" id="play-btn" onclick="onPlayClick()" disabled style="opacity:0.5;">PLAY</button>
     </div>
   </div>
