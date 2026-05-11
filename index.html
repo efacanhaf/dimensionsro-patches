@@ -78,6 +78,56 @@
     transition:all 0.2s;
   }
   .btn-secondary:hover { background:rgba(216,160,80,0.25); color:#fff; box-shadow:0 0 14px rgba(216,160,80,0.5); }
+  .dro-login-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(20, 14, 8, 0.6);
+    border: 1px solid rgba(216, 160, 80, 0.3);
+    border-radius: 4px;
+    margin: 8px 0;
+    max-width: 320px;
+  }
+  .dro-login-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #fef0c0;
+  }
+  .dro-login-row label {
+    min-width: 64px;
+    letter-spacing: 1px;
+  }
+  .dro-login-row input[type="text"],
+  .dro-login-row input[type="password"] {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(216, 160, 80, 0.4);
+    color: #fef0c0;
+    padding: 6px 8px;
+    font-family: inherit;
+    font-size: 13px;
+  }
+  .dro-login-row input:focus {
+    outline: none;
+    border-color: #f0a040;
+  }
+  .dro-login-remember {
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #d8a050;
+  }
+  .dro-login-remember input[type="checkbox"] {
+    margin-right: 4px;
+  }
+  .dro-login-error {
+    color: #ff6464;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 4px 8px;
+  }
   .btn-play {
     flex:1; height:50px;
     font-size:18px; letter-spacing:8px;
@@ -127,7 +177,22 @@
     <div class="btns">
       <button class="btn-secondary" title="Configurações de vídeo / áudio" onclick="external.invoke('setup')">&#9881;</button>
       <button class="btn-secondary" title="Modo gráfico (Vanilla / HD)" onclick="togglePacksPanel()" style="font-size:11px; letter-spacing:1px;">HD</button>
-      <button class="btn-play" id="play-btn" onclick="external.invoke('play')" disabled style="opacity:0.5;">PLAY</button>
+      <div class="dro-login-pane" id="dro-login-pane">
+        <div class="dro-login-row">
+          <label for="dro-login-user">Usuário</label>
+          <input type="text" id="dro-login-user" autocomplete="off" spellcheck="false" maxlength="23">
+        </div>
+        <div class="dro-login-row">
+          <label for="dro-login-pass">Senha</label>
+          <input type="password" id="dro-login-pass" autocomplete="off" maxlength="23">
+        </div>
+        <div class="dro-login-row dro-login-remember">
+          <input type="checkbox" id="dro-login-remember">
+          <label for="dro-login-remember">Lembrar de mim</label>
+        </div>
+        <div class="dro-login-error" id="dro-login-error" hidden></div>
+      </div>
+      <button class="btn-play" id="play-btn" onclick="onPlayClick()" disabled style="opacity:0.5;">PLAY</button>
     </div>
   </div>
 </div>
