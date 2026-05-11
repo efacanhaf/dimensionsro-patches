@@ -602,8 +602,54 @@
   // ============================================================================
   // ============================================================================
 
+  function showLoginError(msg) {
+    var el = document.getElementById('dro-login-error');
+    if (el) { el.textContent = msg; el.hidden = false; }
+  }
+
+  function clearLoginError() {
+    var el = document.getElementById('dro-login-error');
+    if (el) { el.hidden = true; el.textContent = ''; }
+  }
+
+  function onPlayClick() {
+    clearLoginError();
+    var login = document.getElementById('dro-login-user').value.trim();
+    var password = document.getElementById('dro-login-pass').value;
+    var remember = document.getElementById('dro-login-remember').checked;
+    if (!login || !password) {
+      showLoginError('Preencha usuário e senha.');
+      return;
+    }
+    try {
+      external.invoke(JSON.stringify({
+        function: 'set_remember_credentials',
+        parameters: { remember: remember, login: login, password: password }
+      }));
+    } catch (e) { /* persistence is best-effort */ }
+    try {
+      external.invoke(JSON.stringify({
+        function: 'login',
+        parameters: { login: login, password: password }
+      }));
+    } catch (e) {
+      showLoginError('Falha ao iniciar o cliente.');
+    }
+  }
+
+  // Called by rpatchur after window.onload completes the get_saved_credentials request.
+  function loadSavedCredentials(login, password, remember) {
+    var u = document.getElementById('dro-login-user');
+    var p = document.getElementById('dro-login-pass');
+    var r = document.getElementById('dro-login-remember');
+    if (u) u.value = login || '';
+    if (p) p.value = password || '';
+    if (r) r.checked = !!remember;
+  }
+
   setTimeout(function () { try { external.invoke('start_update'); } catch(e) {} }, 200);
   setTimeout(function () { try { external.invoke('get_active_mode'); } catch(e) {} }, 250);
+  setTimeout(function () { try { external.invoke('get_saved_credentials'); } catch(e) {} }, 300);
 
   // === Live server status ====================================================
   var STATUS_URL = 'http://163.176.144.14:8888/status';
