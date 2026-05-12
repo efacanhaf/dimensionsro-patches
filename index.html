@@ -324,12 +324,23 @@
   // patchingStatusReadyAfterUpdate event: the launcher relaunch after a YAML
   // patch is what brings the new index_url into play, so the post-relaunch
   // page load is the moment the button needs to appear.
+  // web-view-rs on Windows is backed by MSHTML (IE11 engine), which has no
+  // URLSearchParams. Parse the query string by hand instead.
+  function queryHas(key, value) {
+    var q = (window.location.search || '').replace(/^\?/, '');
+    if (!q) return false;
+    var parts = q.split('&');
+    for (var i = 0; i < parts.length; i++) {
+      var kv = parts[i].split('=');
+      if (decodeURIComponent(kv[0]) === key && decodeURIComponent(kv[1] || '') === value) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   function maybeShowLauncherUpdateButton() {
-    var hasFlag = false;
-    try {
-      hasFlag = new URLSearchParams(window.location.search).get('launcher_update') === '1';
-    } catch (e) { /* very old webview without URLSearchParams: bail */ }
-    if (!hasFlag) return;
+    if (!queryHas('launcher_update', '1')) return;
     if (document.getElementById('apply-launcher-update-btn')) return;
     var host = document.getElementById('progress-label');
     if (!host) return;
@@ -359,12 +370,7 @@
     var p = document.getElementById('play-btn');
     if (p) { p.disabled = true; p.style.opacity = '0.5'; }
 
-    var hasLauncherUpdate = false;
-    try {
-      hasLauncherUpdate = new URLSearchParams(window.location.search).get('launcher_update') === '1';
-    } catch (e) { /* very old webview without URLSearchParams: fall through */ }
-
-    if (hasLauncherUpdate) {
+    if (queryHas('launcher_update', '1')) {
       maybeShowLauncherUpdateButton();
       return;
     }
