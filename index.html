@@ -314,13 +314,61 @@
     var p = document.getElementById('play-btn');
     if (p) { p.disabled = false; p.style.opacity = '1'; }
   }
-  // Called when DimensionsRO.yml itself was just patched. The launcher's
-  // in-memory hashes are stale, so we relaunch automatically after a short
-  // countdown.
+  // Surface a "APLICAR ATUALIZAÇÃO DO LAUNCHER" button when the URL has
+  // `?launcher_update=1`. The launcher's YAML for that update points
+  // setup.path at dro_update.exe and sets setup.exit_on_success: true, so
+  // clicking the button has handle_setup spawn the helper (UAC prompt) and
+  // close the launcher; dro_update.exe waits for the image lock to release,
+  // swaps DimensionsRO.exe.new over the live binary, and spawns the new
+  // launcher. We probe both on initial page load AND on the
+  // patchingStatusReadyAfterUpdate event: the launcher relaunch after a YAML
+  // patch is what brings the new index_url into play, so the post-relaunch
+  // page load is the moment the button needs to appear.
+  function maybeShowLauncherUpdateButton() {
+    var hasFlag = false;
+    try {
+      hasFlag = new URLSearchParams(window.location.search).get('launcher_update') === '1';
+    } catch (e) { /* very old webview without URLSearchParams: bail */ }
+    if (!hasFlag) return;
+    if (document.getElementById('apply-launcher-update-btn')) return;
+    var host = document.getElementById('progress-label');
+    if (!host) return;
+
+    setLabel('ATUALIZAÇÃO DO LAUNCHER DISPONÍVEL — CLIQUE PARA APLICAR');
+    var btn = document.createElement('button');
+    btn.id = 'apply-launcher-update-btn';
+    btn.textContent = 'APLICAR ATUALIZAÇÃO DO LAUNCHER';
+    btn.style.cssText = 'display:block;margin:14px auto 0;padding:10px 22px;background:#d8a050;color:#1a1208;border:0;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-size:12px;box-shadow:0 2px 10px rgba(0,0,0,0.5);';
+    btn.onclick = function () {
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+      setLabel('APLICANDO — AUTORIZE NO PROMPT DO WINDOWS');
+      try { external.invoke('setup'); } catch (e) {}
+    };
+    host.parentNode.insertBefore(btn, host.nextSibling);
+    var play = document.getElementById('play-btn');
+    if (play) { play.disabled = true; play.style.opacity = '0.5'; }
+  }
+
+  // Called when DimensionsRO.yml itself was just patched. By default we
+  // relaunch automatically after a short countdown (the relaunch is what
+  // makes the new index_url take effect). When the YAML carries the launcher
+  // update flag, we surface the button instead.
   function patchingStatusReadyAfterUpdate() {
     setPct(100);
     var p = document.getElementById('play-btn');
     if (p) { p.disabled = true; p.style.opacity = '0.5'; }
+
+    var hasLauncherUpdate = false;
+    try {
+      hasLauncherUpdate = new URLSearchParams(window.location.search).get('launcher_update') === '1';
+    } catch (e) { /* very old webview without URLSearchParams: fall through */ }
+
+    if (hasLauncherUpdate) {
+      maybeShowLauncherUpdateButton();
+      return;
+    }
+
     var n = 3;
     setLabel('LAUNCHER ATUALIZADO — REINICIANDO EM ' + n + 's');
     var iv = setInterval(function () {
@@ -333,6 +381,15 @@
         try { external.invoke('relaunch'); } catch (e) {}
       }
     }, 1000);
+  }
+
+  // Surface the button also on initial page load: when the launcher
+  // relaunches after applying a yml-bearing patch, this is the first time
+  // the new index_url (with `launcher_update=1`) renders.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', maybeShowLauncherUpdateButton);
+  } else {
+    maybeShowLauncherUpdateButton();
   }
   function patchingStatusError(msg) { setLabel('ERROR: ' + msg); }
   function patchingStatusDownloading(d, t, bps) {
